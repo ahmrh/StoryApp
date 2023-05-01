@@ -1,12 +1,13 @@
-package com.ahmrh.storyapp.view.story
+package com.ahmrh.storyapp.ui.auth
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.ahmrh.storyapp.R
 
-class StoryActivity : AppCompatActivity() {
+class RegisterActivity : AppCompatActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_story)
+        setContentView(R.layout.activity_register)
     }
 }

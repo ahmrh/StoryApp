@@ -13,13 +13,13 @@
         android:theme="@style/Theme.StoryApp"
         tools:targetApi="31">
         <activity
-            android:name=".view.story.StoryActivity"
+            android:name=".ui.story.StoryActivity"
             android:exported="false" />
         <activity
-            android:name=".view.authentication.RegisterActivity"
+            android:name=".ui.auth.RegisterActivity"
             android:exported="false" />
         <activity
-            android:name=".view.authentication.LoginActivity"
+            android:name=".ui.auth.LoginActivity"
             android:exported="false" />
         <activity
             android:name=".MainActivity"

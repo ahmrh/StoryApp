@@ -1,4 +1,4 @@
-package com.ahmrh.storyapp.view.story
+package com.ahmrh.storyapp.ui.story
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment

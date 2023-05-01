@@ -1,8 +1,11 @@
-package com.ahmrh.storyapp.api.responses
+package com.ahmrh.storyapp.data.remote.responses
 
 import com.google.gson.annotations.SerializedName
 
-data class DefaultResponse(
+data class LoginResponse(
+
+	@field:SerializedName("loginResult")
+	val loginResult: LoginResult,
 
 	@field:SerializedName("error")
 	val error: Boolean,
