@@ -1,4 +1,4 @@
-package com.ahmrh.storyapp.ui.story
+package com.ahmrh.storyapp.ui.main
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
