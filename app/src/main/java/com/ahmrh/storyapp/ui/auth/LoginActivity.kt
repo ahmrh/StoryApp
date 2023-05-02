@@ -2,8 +2,9 @@ package com.ahmrh.storyapp.ui.auth
 
 import android.content.Context
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
@@ -14,19 +15,23 @@ import com.ahmrh.storyapp.ui.main.MainActivity
 import com.ahmrh.storyapp.util.ViewModelFactory
 
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "login")
+
 class LoginActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityLoginBinding
     private lateinit var authViewModel: AuthViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         setupUtil()
-        setupData()
+        setupUI()
         setupAction()
+
+        loginCheck()
     }
 
     private fun setupUtil() {
@@ -36,36 +41,51 @@ class LoginActivity : AppCompatActivity() {
         )
     }
 
-    private fun setupData() {
-        authViewModel.isLogin().observe(this){isLogin ->
-            if(isLogin){
+    private fun loginCheck() {
+        authViewModel.isLogin().observe(this) { isLogin ->
+            if (isLogin) {
                 startActivity(Intent(this, MainActivity::class.java))
+                finish()
             }
         }
     }
 
     private fun setupAction() {
-        binding.btnSubmit.setOnClickListener{
-            val email = binding.etEmail.text.toString()
-            val password = binding.etPassword.text.toString()
+        binding.btnSubmit.setOnClickListener {
+            val email = binding.edLoginEmail.text.toString()
+            val password = binding.edLoginPassword.text.toString()
 
             when {
                 email.isEmpty() -> {
-                    binding.etEmail.error = "Masih kosong"
+                    binding.edLoginEmail.error = "Masih kosong"
                 }
                 password.isEmpty() -> {
-                    binding.etPassword.error = "Masih kosong"
+                    binding.edLoginPassword.error = "Masih kosong"
                 }
                 else -> {
-                    authViewModel.auth(email, password)
+                    val success = authViewModel.auth(email, password)
+
                 }
             }
         }
 
-        binding.btnRegister.setOnClickListener{
+        binding.btnRegister.setOnClickListener {
             val intent = Intent(this@LoginActivity, RegisterActivity::class.java)
             startActivity(intent)
         }
 
     }
+
+    private fun setupUI(){
+        authViewModel.isLoading.observe(this) {
+            showLoading(it)
+        }
+
+        supportActionBar?.hide()
+    }
+
+    private fun showLoading(isLoading: Boolean) {
+        binding.loadingLayout.visibility = if (isLoading) View.VISIBLE else View.GONE
+    }
+
 }

@@ -34,6 +34,14 @@ class AppPreferences private constructor(private val dataStore: DataStore<Prefer
         }
     }
 
+    suspend fun deleteLogin(){
+        dataStore.edit { preferences ->
+            preferences[TOKEN_KEY] = ""
+            preferences[NAME_KEY] = ""
+            preferences[LOGIN_KEY] = false
+        }
+    }
+
     fun isLogin() : Flow<Boolean>{
         return dataStore.data.map { preferences ->
             preferences[LOGIN_KEY] ?: false
