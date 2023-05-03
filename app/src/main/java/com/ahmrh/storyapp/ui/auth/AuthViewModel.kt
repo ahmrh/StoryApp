@@ -112,7 +112,4 @@ class AuthViewModel(private val pref: AppPreferences) : ViewModel(){
         deletePrefLogin()
     }
 
-    fun getName(): LiveData<String> {
-        return pref.getName().asLiveData()
-    }
 }

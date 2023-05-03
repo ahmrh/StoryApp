@@ -1,15 +1,14 @@
 package com.ahmrh.storyapp.data.local
 
+import android.util.Log
 import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.booleanPreferencesKey
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.core.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 class AppPreferences private constructor(private val dataStore: DataStore<Preferences>) {
     companion object {
+        const val TAG = "AppPreferences"
         @Volatile
         private var INSTANCE: AppPreferences? = null
 
@@ -28,9 +27,10 @@ class AppPreferences private constructor(private val dataStore: DataStore<Prefer
 
     suspend fun saveLogin(login: Login){
         dataStore.edit {preferences ->
-            preferences[TOKEN_KEY] = login.token
+            preferences[TOKEN_KEY] = "Bearer ${login.token}"
             preferences[NAME_KEY] = login.name
             preferences[LOGIN_KEY] = true
+            Log.d(TAG, "SaveLogin: ${preferences[TOKEN_KEY]}")
         }
     }
 
@@ -45,6 +45,12 @@ class AppPreferences private constructor(private val dataStore: DataStore<Prefer
     fun isLogin() : Flow<Boolean>{
         return dataStore.data.map { preferences ->
             preferences[LOGIN_KEY] ?: false
+        }
+    }
+
+    fun getToken(): Flow<String>{
+        return dataStore.data.map { preferences->
+            preferences[TOKEN_KEY] ?: "No Token"
         }
     }
 

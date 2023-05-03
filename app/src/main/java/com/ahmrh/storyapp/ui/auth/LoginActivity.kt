@@ -3,6 +3,7 @@ package com.ahmrh.storyapp.ui.auth
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.datastore.core.DataStore
@@ -17,6 +18,9 @@ import com.ahmrh.storyapp.util.ViewModelFactory
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "login")
 
 class LoginActivity : AppCompatActivity() {
+    companion object{
+        const val TAG = "LoginActivity"
+    }
 
     private lateinit var binding: ActivityLoginBinding
     private lateinit var authViewModel: AuthViewModel
@@ -43,6 +47,7 @@ class LoginActivity : AppCompatActivity() {
 
     private fun loginCheck() {
         authViewModel.isLogin().observe(this) { isLogin ->
+            Log.d(TAG, "$isLogin")
             if (isLogin) {
                 startActivity(Intent(this, MainActivity::class.java))
                 finish()
