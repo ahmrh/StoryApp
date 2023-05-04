@@ -69,7 +69,6 @@ class LoginActivity : AppCompatActivity() {
                 }
                 else -> {
                     val success = authViewModel.auth(email, password)
-
                 }
             }
         }

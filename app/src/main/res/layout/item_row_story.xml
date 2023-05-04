@@ -7,10 +7,10 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
-    android:layout_marginStart="8dp"
-    android:layout_marginTop="4dp"
-    android:layout_marginEnd="8dp"
-    android:layout_marginBottom="4dp"
+    android:layout_marginStart="16dp"
+    android:layout_marginTop="8dp"
+    android:layout_marginEnd="16dp"
+    android:layout_marginBottom="8dp"
     app:cardCornerRadius="4dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -20,23 +20,22 @@
 
         <ImageView
             android:id="@+id/img_item_photo"
-            android:layout_width="96dp"
-            android:layout_height="96dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
             android:scaleType="centerCrop"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:src="@drawable/baseline_image_24"
 
-            app:tint="@color/black" />
+            tools:src="@drawable/baseline_image_24" />
 
         <TextView
             android:id="@+id/tv_item_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="4dp"
             android:text="In the name of lordaeron"
             android:textColor="@color/black"
             android:textStyle="bold"
@@ -44,29 +43,28 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/tv_item_desc"
-            android:layout_width="254dp"
-            android:layout_height="74dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="4dp"
-            android:maxLines="5"
-            android:text="@string/lipsum"
-            android:textSize="12sp"
-            android:justificationMode="inter_word"
-            app:layout_constraintStart_toEndOf="@+id/img_item_photo"
-            app:layout_constraintTop_toBottomOf="@+id/tv_item_title" />
-
-        <TextView
             android:id="@+id/tv_item_created_at"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="4dp"
-            android:maxLength="11"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="4dp"
             android:text="08 Aug 2023"
             android:textSize="12sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintStart_toEndOf="@+id/img_item_photo"
+            app:layout_constraintTop_toBottomOf="@+id/tv_item_title" />
+        <TextView
+            android:id="@+id/tv_item_desc"
+            android:layout_width="215dp"
+            android:layout_height="74dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:justificationMode="inter_word"
+            android:maxLines="5"
+            android:text="@string/lipsum"
+            android:textSize="12sp"
+            app:layout_constraintStart_toEndOf="@+id/img_item_photo"
+            app:layout_constraintTop_toBottomOf="@+id/tv_item_created_at" />
+
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

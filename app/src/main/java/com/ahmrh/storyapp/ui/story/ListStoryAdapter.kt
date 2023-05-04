@@ -11,8 +11,16 @@ import com.ahmrh.storyapp.databinding.ItemRowStoryBinding
 import com.bumptech.glide.Glide
 
 class ListStoryAdapter(private val listStory: List<Story>): RecyclerView.Adapter<ListStoryAdapter.ListViewHolder>() {
-    class ListViewHolder(var binding: ItemRowStoryBinding) : RecyclerView.ViewHolder(binding.root) {
+    class ListViewHolder(var binding: ItemRowStoryBinding) : RecyclerView.ViewHolder(binding.root)
 
+    private lateinit var onItemClickCallback: OnItemClickCallback
+
+    fun setOnItemClickCallback(onItemClickCallback: OnItemClickCallback) {
+        this.onItemClickCallback = onItemClickCallback
+    }
+
+    interface OnItemClickCallback{
+        fun onItemClicked(data: Story)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ListViewHolder {
@@ -32,7 +40,7 @@ class ListStoryAdapter(private val listStory: List<Story>): RecyclerView.Adapter
             .into(holder.binding.imgItemPhoto)
 
         holder.itemView.setOnClickListener{
-            Toast.makeText(holder.itemView.context, "You choose ${listStory[holder.adapterPosition].id} listStory[holder.adapterPosition].name}", Toast.LENGTH_SHORT).show()
+            onItemClickCallback.onItemClicked(listStory[holder.adapterPosition])
         }
 
     }
