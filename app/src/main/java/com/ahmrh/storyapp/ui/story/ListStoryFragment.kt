@@ -35,6 +35,7 @@ class ListStoryFragment : Fragment() {
 
     private lateinit var mFragmentManager: FragmentManager
     private lateinit var mDetailStoryFragment: DetailStoryFragment
+    private lateinit var mAddStoryFragment: AddStoryFragment
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -49,6 +50,18 @@ class ListStoryFragment : Fragment() {
 
         setupUtil()
         setupData()
+        setupAction()
+    }
+
+    private fun setupAction() {
+        binding.btnAddStory.setOnClickListener{
+            mAddStoryFragment = AddStoryFragment()
+
+            mFragmentManager.commit {
+                addToBackStack(null)
+                replace(R.id.frame_container, mAddStoryFragment, DetailStoryFragment::class.java.simpleName)
+            }
+        }
     }
 
     private fun setupUtil() {

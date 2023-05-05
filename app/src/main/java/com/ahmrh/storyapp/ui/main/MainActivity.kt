@@ -35,7 +35,6 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var mFragmentManager: FragmentManager
     private lateinit var mListStoryFragment: ListStoryFragment
-    private lateinit var mDetailStoryFragment: DetailStoryFragment
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -56,7 +55,6 @@ class MainActivity : AppCompatActivity() {
 
         mFragmentManager = supportFragmentManager
         mListStoryFragment = ListStoryFragment()
-        mDetailStoryFragment = DetailStoryFragment()
 
         val fragment = mFragmentManager.findFragmentByTag(ListStoryFragment::class.java.simpleName)
         if (fragment !is ListStoryFragment) {
