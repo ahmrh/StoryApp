@@ -28,7 +28,6 @@ class CameraActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         setupAction()
-
     }
 
 
@@ -38,7 +37,9 @@ class CameraActivity : AppCompatActivity() {
         startCamera()
     }
     private fun setupAction() {
-        binding.captureImage.setOnClickListener { takePhoto() }
+        binding.captureImage.setOnClickListener {
+         //takePhoto()
+        }
         binding.switchCamera.setOnClickListener {
             cameraSelector = if (cameraSelector.equals(CameraSelector.DEFAULT_BACK_CAMERA)) CameraSelector.DEFAULT_FRONT_CAMERA
             else CameraSelector.DEFAULT_BACK_CAMERA
@@ -46,37 +47,38 @@ class CameraActivity : AppCompatActivity() {
         }
     }
 
-    private fun takePhoto() {
-        val imageCapture = imageCapture ?: return
-
-        val photoFile = createFile(application)
-
-        val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()
-        imageCapture.takePicture(
-            outputOptions,
-            ContextCompat.getMainExecutor(this),
-            object : ImageCapture.OnImageSavedCallback {
-                override fun onError(exc: ImageCaptureException) {
-                    Toast.makeText(
-                        this@CameraActivity,
-                        "Gagal mengambil gambar.",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-
-                override fun onImageSaved(output: ImageCapture.OutputFileResults) {
-                    val intent = Intent()
-                    intent.putExtra("picture", photoFile)
-                    intent.putExtra(
-                        "isBackCamera",
-                        cameraSelector == CameraSelector.DEFAULT_BACK_CAMERA
-                    )
-                    setResult(AddStoryFragment.CAMERA_X_RESULT, intent)
-                    finish()
-                }
-            }
-        )
-    }
+//    private fun takePhoto() {
+//        val imageCapture = imageCapture ?: return
+//
+//        val photoFile = createFile(application)
+//
+//        val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()
+//        imageCapture.takePicture(
+//            outputOptions,
+//            ContextCompat.getMainExecutor(this),
+//            object : ImageCapture.OnImageSavedCallback {
+//                override fun onError(exc: ImageCaptureException) {
+//                    Toast.makeText(
+//                        this@CameraActivity,
+//                        "Gagal mengambil gambar.",
+//                        Toast.LENGTH_SHORT
+//                    ).show()
+//                }
+//
+//
+//                override fun onImageSaved(output: ImageCapture.OutputFileResults) {
+//                    val intent = Intent()
+//                    intent.putExtra("picture", photoFile)
+//                    intent.putExtra(
+//                        "isBackCamera",
+//                        cameraSelector == CameraSelector.DEFAULT_BACK_CAMERA
+//                    )
+//                    setResult(AddStoryFragment.CAMERA_X_RESULT, intent)
+//                    finish()
+//                }
+//            }
+//        )
+//    }
     private fun startCamera() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
         cameraProviderFuture.addListener({
@@ -106,7 +108,6 @@ class CameraActivity : AppCompatActivity() {
             }
         }, ContextCompat.getMainExecutor(this))
     }
-
 
     private fun hideSystemUI() {
         @Suppress("DEPRECATION")
