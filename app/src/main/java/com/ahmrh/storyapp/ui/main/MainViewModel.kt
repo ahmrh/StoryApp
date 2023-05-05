@@ -1,17 +1,25 @@
 package com.ahmrh.storyapp.ui.main
 
+import android.text.Editable
 import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.*
 import com.ahmrh.storyapp.data.local.AppPreferences
 import com.ahmrh.storyapp.data.local.Story
+import com.ahmrh.storyapp.data.remote.responses.DefaultResponse
 import com.ahmrh.storyapp.data.remote.responses.ListStoryResponse
 import com.ahmrh.storyapp.data.remote.responses.StoryItem
 import com.ahmrh.storyapp.data.remote.retrofit.ApiConfig
 import com.ahmrh.storyapp.ui.auth.AuthViewModel
 import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.io.File
 
 class MainViewModel(private val pref: AppPreferences) : ViewModel() {
     companion object{
@@ -67,7 +75,35 @@ class MainViewModel(private val pref: AppPreferences) : ViewModel() {
         }
 
         _listStory.value = listStory
+    }
 
+    fun uploadStory(file: File, description: String, token: String): Boolean {
+        var uploadSuccess = false
+
+        val requestImageFile = file.asRequestBody("image/jpeg".toMediaType())
+        val requestDescription = description.toRequestBody("text/plain".toMediaType())
+        val imageMultipart: MultipartBody.Part = MultipartBody.Part.createFormData(
+            "photo",
+            file.name,
+            requestImageFile
+        )
+
+        val uploadImageRequest = ApiConfig.getApiService().addStory(imageMultipart, requestDescription, token)
+
+        uploadImageRequest.enqueue(object : Callback<DefaultResponse> {
+            override fun onResponse(
+                call: Call<DefaultResponse>,
+                response: Response<DefaultResponse>
+            ) {
+                if (response.isSuccessful) {
+                    uploadSuccess = true
+                }
+            }
+            override fun onFailure(call: Call<DefaultResponse>, t: Throwable) {
+                uploadSuccess = false
+            }
+        })
+        return uploadSuccess
     }
 
 }

@@ -1,30 +1,40 @@
 package com.ahmrh.storyapp.ui.story
 
 import android.Manifest
+import android.app.Activity.RESULT_OK
 import android.content.Intent
+import android.content.Intent.ACTION_GET_CONTENT
 import android.content.pm.PackageManager
+import android.graphics.BitmapFactory
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.commit
-import com.ahmrh.storyapp.R
 import com.ahmrh.storyapp.databinding.FragmentAddStoryBinding
-import com.ahmrh.storyapp.databinding.FragmentDetailStoryBinding
+import com.ahmrh.storyapp.ui.main.MainActivity
+import com.ahmrh.storyapp.ui.main.MainViewModel
 import java.io.File
 
 class AddStoryFragment : Fragment() {
 
     private var _binding: FragmentAddStoryBinding? =null
     private val binding get() = _binding!!
-    private lateinit var fragmentManager: FragmentManager
 
     private var getFile: File? =  null
+
+    private val mainViewModel: MainViewModel by lazy {
+        (activity as MainActivity).mainViewModel
+    }
 
     companion object {
         const val CAMERA_X_RESULT = 200
@@ -33,6 +43,9 @@ class AddStoryFragment : Fragment() {
 
         private const val REQUEST_CODE_PERMISSIONS = 10
     }
+
+    private lateinit var fragmentManager: FragmentManager
+    private var token: String? = ""
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -53,6 +66,10 @@ class AddStoryFragment : Fragment() {
 
     private fun setupUtil(){
         fragmentManager = parentFragmentManager
+        mainViewModel.getToken().observe(requireActivity()){
+            token = it
+            Log.d(ListStoryFragment.TAG, "Token: $it")
+        }
     }
     private fun setupPermission() {
         if (!allPermissionsGranted()) {
@@ -66,8 +83,38 @@ class AddStoryFragment : Fragment() {
 
     private fun setupAction() {
         binding.btnCamera.setOnClickListener{
-            startActivity(Intent(requireContext(), CameraActivity::class.java))
+            launcherIntentCameraX.launch(Intent(requireContext(), CameraActivity::class.java))
         }
+        binding.btnGallery.setOnClickListener{
+            val intent = Intent()
+            intent.action = ACTION_GET_CONTENT
+            intent.type = "image/*"
+            val chooser = Intent.createChooser(intent, "Choose a Picture")
+            launcherIntentGallery.launch(chooser)
+        }
+        binding.btnUpload.setOnClickListener{
+            addStory()
+        }
+    }
+
+    private fun addStory(){
+        var success = false
+        if (getFile != null) {
+            val file = reduceFileImage(getFile as File)
+            val description = binding.edDescription.text.toString()
+            if(token != null){
+                success = mainViewModel.uploadStory(file, description, token!!)
+            }
+            else{
+                Toast.makeText(requireContext(), "Who are you?", Toast.LENGTH_SHORT).show()
+            }
+        } else {
+            Toast.makeText(requireContext(), "Please fill above data", Toast.LENGTH_SHORT).show()
+        }
+        if(success){
+            Toast.makeText(requireContext(), "Story Uploaded", Toast.LENGTH_SHORT).show()
+        }
+
     }
 
     override fun onRequestPermissionsResult(
@@ -95,6 +142,38 @@ class AddStoryFragment : Fragment() {
         ContextCompat.checkSelfPermission(requireContext(), it) == PackageManager.PERMISSION_GRANTED
     }
 
+    private val launcherIntentCameraX = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) {
+        if (it.resultCode == CAMERA_X_RESULT) {
+            val myFile = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                it.data?.getSerializableExtra("picture", File::class.java)
+            } else {
+                @Suppress("DEPRECATION")
+                it.data?.getSerializableExtra("picture")
+            } as? File
+
+            val isBackCamera = it.data?.getBooleanExtra("isBackCamera", true) as Boolean
+
+            myFile?.let { file ->
+                rotateFile(file, isBackCamera)
+                getFile = myFile
+                binding.imgPreview.setImageBitmap(BitmapFactory.decodeFile(file.path))
+            }
+        }
+    }
+    private val launcherIntentGallery = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == RESULT_OK) {
+            val selectedImg = result.data?.data as Uri
+            selectedImg.let { uri ->
+                val myFile = uriToFile(uri, requireContext())
+                getFile = myFile
+                binding.imgPreview.setImageURI(uri)
+            }
+        }
+    }
 
 
 }
