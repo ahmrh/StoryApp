@@ -28,6 +28,8 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
 
+            android:transitionName="photoTransition"
+
             tools:src="@drawable/baseline_image_24" />
 
         <TextView
@@ -37,7 +39,9 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="4dp"
             android:text="In the name of lordaeron"
-            android:textColor="@color/black"
+
+            android:transitionName="titleTransition"
+
             android:textStyle="bold"
             app:layout_constraintStart_toEndOf="@+id/img_item_photo"
             app:layout_constraintTop_toTopOf="parent" />
@@ -59,6 +63,9 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
             android:justificationMode="inter_word"
+
+            android:transitionName="descTransition"
+
             android:maxLines="5"
             android:text="@string/lipsum"
             android:textSize="12sp"

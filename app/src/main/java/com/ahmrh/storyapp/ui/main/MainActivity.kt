@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.WindowManager
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
@@ -45,6 +46,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupUtil() {
+
         val pref = AppPreferences.getInstance(dataStore)
         authViewModel = ViewModelProvider(this, ViewModelFactory(pref)).get(
             AuthViewModel::class.java

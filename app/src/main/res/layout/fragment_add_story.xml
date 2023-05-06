@@ -17,11 +17,13 @@
             android:id="@+id/img_preview"
             android:layout_width="296dp"
             android:layout_height="296dp"
-            android:scaleType="centerCrop"
+            android:layout_marginTop="16dp"
 
+            android:scaleType="centerCrop"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.627"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/ed_description"
             app:srcCompat="@drawable/baseline_image_120" />
 
         <Button
@@ -55,14 +57,14 @@
             android:layout_height="wrap_content"
             android:layout_marginVertical="16dp"
             android:gravity="start|top"
-            android:hint="lorem ipsum dolor si amet"
+            android:hint="Share your story ..."
             android:inputType="textMultiLine"
             android:lines="6"
             android:maxLines="10"
             android:scrollbars="vertical"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btn_camera" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <Button
             android:id="@+id/btn_upload"
@@ -72,6 +74,29 @@
             android:text="Upload"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/ed_description" />
+            app:layout_constraintTop_toBottomOf="@+id/btn_camera" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/loading_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:translationZ="8dp"
+        android:background="@color/md_theme_light_background"
+        android:visibility="gone"
+        >
+
+        <ProgressBar
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>

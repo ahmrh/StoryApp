@@ -43,22 +43,15 @@ class RegisterActivity : AppCompatActivity() {
             val email = binding.edRegisterEmail.text.toString()
             val password = binding.edRegisterPassword.text.toString()
 
-            when {
-                email.isEmpty() -> {
-                    binding.edRegisterEmail.error = "Masih kosong"
+            val authResponseLiveData = authViewModel.register(name, email, password)
+            authResponseLiveData.observe(this){authResponse ->
+                if(authResponse.success){
+                    Toast.makeText(this, "User Registered", Toast.LENGTH_SHORT).show()
+                    finish()
+                } else{
+                    Toast.makeText(this, authResponse.message, Toast.LENGTH_SHORT).show()
                 }
-                password.isEmpty() -> {
-                    binding.edRegisterPassword.error = "Masih kosong"
-                }
-                else -> {
-                    val success = authViewModel.register(name, email, password)
-                    if(success){
-                        Toast.makeText(this, "User Created", Toast.LENGTH_SHORT).show()
 
-                        finish()
-                    }
-
-                }
             }
         }
 

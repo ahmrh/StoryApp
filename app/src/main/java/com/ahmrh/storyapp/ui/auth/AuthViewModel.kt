@@ -1,15 +1,12 @@
 package com.ahmrh.storyapp.ui.auth
 
-import android.content.Intent
 import android.util.Log
-import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.*
 import com.ahmrh.storyapp.data.local.AppPreferences
 import com.ahmrh.storyapp.data.local.Login
 import com.ahmrh.storyapp.data.remote.responses.DefaultResponse
 import com.ahmrh.storyapp.data.remote.responses.LoginResponse
 import com.ahmrh.storyapp.data.remote.retrofit.ApiConfig
-import com.ahmrh.storyapp.repositories.AuthRepository
 import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
@@ -44,16 +41,20 @@ class AuthViewModel(private val pref: AppPreferences) : ViewModel(){
         _isLoading.value = false
     }
 
-    fun auth(email: String, password: String): Boolean{
+    fun auth(email: String, password: String): LiveData<AuthResponse> {
         _isLoading.value = true
-        var authSuccess = false
+        val authResponseLiveData = MutableLiveData<AuthResponse>()
         val client = ApiConfig.getApiService().login(email, password)
         client.enqueue(object : Callback<LoginResponse> {
             override fun onResponse(
                 call: Call<LoginResponse>,
                 response: Response<LoginResponse>
             ) {
+
                 if (response.isSuccessful) {
+                    authResponseLiveData.value = AuthResponse(response.isSuccessful,
+                        response.body()?.message ?: "Authorized User"
+                    )
                     _isLoading.value = false
                     val name = response.body()?.loginResult?.name.toString()
                     val userId = response.body()?.loginResult?.userId.toString()
@@ -61,10 +62,8 @@ class AuthViewModel(private val pref: AppPreferences) : ViewModel(){
                     _login.value = Login(name, userId, token)
 
                     savePrefLogin()
-
-                    authSuccess = true
-
                 } else {
+                    authResponseLiveData.value = AuthResponse(response.isSuccessful, "Incorrect input data")
                     _isLoading.value = false
                     Log.e(TAG, "onFailureResponse: ${response.message()}")
                 }
@@ -72,41 +71,51 @@ class AuthViewModel(private val pref: AppPreferences) : ViewModel(){
 
             override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
                 _isLoading.value = false
+                authResponseLiveData.value = AuthResponse(false, "Please check your input")
                 Log.e(TAG, "onFailureThrowable: ${t.message}")
             }
         })
 
-        return authSuccess
+        return authResponseLiveData
 
     }
 
-    fun register(name: String, email: String, password: String): Boolean {
+    fun register(name: String, email: String, password: String): LiveData<AuthResponse> {
         _isLoading.value = true
-        var registerSuccess = false
+        val authResponseLiveData = MutableLiveData<AuthResponse>()
         val client = ApiConfig.getApiService().register(name, email, password)
         client.enqueue(object : Callback<DefaultResponse> {
             override fun onResponse(
                 call: Call<DefaultResponse>,
                 response: Response<DefaultResponse>
             ) {
+                Log.e(TAG, response.body().toString())
                 if (response.isSuccessful) {
+                    authResponseLiveData.value = AuthResponse(response.isSuccessful,
+                        response.body()?.message ?: "User registered"
+                    )
                     _isLoading.value = false
-                    registerSuccess = true
-
                 } else {
+                    authResponseLiveData.value = AuthResponse(response.isSuccessful, "Incorrect input data")
                     _isLoading.value = false
                     Log.e(TAG, "onFailureResponse: ${response.message()}")
                 }
             }
 
             override fun onFailure(call: Call<DefaultResponse>, t: Throwable) {
+                authResponseLiveData.value = AuthResponse(false, "Please check your input")
                 _isLoading.value = false
                 Log.e(TAG, "onFailureThrowable: ${t.message}")
             }
         })
 
-        return registerSuccess
+        return authResponseLiveData
     }
+
+    data class AuthResponse(
+        val success : Boolean,
+        val message: String,
+    )
 
     fun endSession(){
         deletePrefLogin()

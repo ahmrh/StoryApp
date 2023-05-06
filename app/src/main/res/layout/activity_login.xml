@@ -4,30 +4,32 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/md_theme_light_background"
+    android:paddingHorizontal="56dp"
     tools:context=".ui.auth.LoginActivity">
 
 
-    <EditText
+    <com.ahmrh.storyapp.customview.CustomPasswordEditText
         android:id="@+id/ed_login_password"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:ems="10"
-        android:hint="Password"
+        android:hint="@string/password"
         android:inputType="textPassword"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/ed_login_email" />
 
-    <EditText
+    <com.ahmrh.storyapp.customview.CustomEmailEditText
         android:id="@+id/ed_login_email"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="44dp"
         android:ems="10"
         android:inputType="textEmailAddress"
-        android:hint="Email"
+        android:hint="@string/email"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
@@ -35,21 +37,24 @@
 
     <TextView
         android:id="@+id/textView"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="100dp"
-        android:text="Login Page"
-        android:textSize="27sp"
+        android:layout_marginTop="108dp"
+        android:text="@string/welcome"
+        android:textColor="?colorOnPrimaryContainer"
+        android:textStyle="bold"
+        android:textSize="36sp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.267"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/btn_submit"
-        android:layout_width="208dp"
+        android:layout_width="match_parent"
         android:layout_height="49dp"
         android:layout_marginTop="20dp"
-        android:text="Login"
+        android:text="@string/login"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
@@ -57,10 +62,10 @@
 
     <Button
         android:id="@+id/btn_register"
-        android:layout_width="208dp"
+        android:layout_width="match_parent"
         android:layout_height="49dp"
         android:layout_marginTop="8dp"
-        android:text="Register"
+        android:text="@string/register"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.492"
         app:layout_constraintStart_toStartOf="parent"
@@ -75,7 +80,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:translationZ="8dp"
-        android:background="@color/white"
+        android:background="@color/md_theme_light_background"
         android:visibility="gone"
         >
 

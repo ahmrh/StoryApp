@@ -3,9 +3,14 @@ package com.ahmrh.storyapp.ui.auth
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityOptionsCompat
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
@@ -60,22 +65,21 @@ class LoginActivity : AppCompatActivity() {
             val email = binding.edLoginEmail.text.toString()
             val password = binding.edLoginPassword.text.toString()
 
-            when {
-                email.isEmpty() -> {
-                    binding.edLoginEmail.error = "Masih kosong"
-                }
-                password.isEmpty() -> {
-                    binding.edLoginPassword.error = "Masih kosong"
-                }
-                else -> {
-                    val success = authViewModel.auth(email, password)
+            val authResponseLiveData = authViewModel.auth(email, password)
+            authResponseLiveData.observe(this) { authResponse ->
+                if (authResponse.success) {
+                    Toast.makeText(this, "Authorized User", Toast.LENGTH_SHORT).show()
+                    val intent = Intent(this, MainActivity::class.java)
+                    startActivity(intent, ActivityOptionsCompat.makeSceneTransitionAnimation(this).toBundle())
+                } else{
+                    Toast.makeText(this, authResponse.message, Toast.LENGTH_SHORT).show()
                 }
             }
         }
 
         binding.btnRegister.setOnClickListener {
             val intent = Intent(this@LoginActivity, RegisterActivity::class.java)
-            startActivity(intent)
+            startActivity(intent, ActivityOptionsCompat.makeSceneTransitionAnimation(this).toBundle())
         }
 
     }
@@ -85,6 +89,14 @@ class LoginActivity : AppCompatActivity() {
             showLoading(it)
         }
 
+        binding.edLoginEmail.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
+            }
+            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+            }
+            override fun afterTextChanged(s: Editable) {
+            }
+        })
         supportActionBar?.hide()
     }
 

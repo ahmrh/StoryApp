@@ -33,6 +33,7 @@ class MainViewModel(private val pref: AppPreferences) : ViewModel() {
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
 
+
    fun getToken() : LiveData<String> = pref.getToken().asLiveData()
 
     fun fetchStories(token : String) {
@@ -77,8 +78,9 @@ class MainViewModel(private val pref: AppPreferences) : ViewModel() {
         _listStory.value = listStory
     }
 
-    fun uploadStory(file: File, description: String, token: String): Boolean {
-        var uploadSuccess = false
+    fun uploadStory(file: File, description: String, token: String): LiveData<Boolean> {
+        _isLoading.value = true
+        val uploadSuccessLiveData = MutableLiveData<Boolean>()
 
         val requestImageFile = file.asRequestBody("image/jpeg".toMediaType())
         val requestDescription = description.toRequestBody("text/plain".toMediaType())
@@ -95,15 +97,16 @@ class MainViewModel(private val pref: AppPreferences) : ViewModel() {
                 call: Call<DefaultResponse>,
                 response: Response<DefaultResponse>
             ) {
-                if (response.isSuccessful) {
-                    uploadSuccess = true
-                }
+                uploadSuccessLiveData.value = response.isSuccessful
+                _isLoading.value = false
             }
+
             override fun onFailure(call: Call<DefaultResponse>, t: Throwable) {
-                uploadSuccess = false
+                uploadSuccessLiveData.value = false
+                _isLoading.value = false
             }
         })
-        return uploadSuccess
+        return uploadSuccessLiveData
     }
 
 }

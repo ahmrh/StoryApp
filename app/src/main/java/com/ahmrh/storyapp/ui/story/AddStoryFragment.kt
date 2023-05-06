@@ -9,20 +9,21 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.system.Os.remove
 import android.util.Log
+import android.view.*
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.commit
 import com.ahmrh.storyapp.databinding.FragmentAddStoryBinding
 import com.ahmrh.storyapp.ui.main.MainActivity
 import com.ahmrh.storyapp.ui.main.MainViewModel
+import com.ahmrh.storyapp.ui.story.AddStoryFragment.Companion.CAMERA_X_RESULT
 import java.io.File
 
 class AddStoryFragment : Fragment() {
@@ -38,19 +39,19 @@ class AddStoryFragment : Fragment() {
 
     companion object {
         const val CAMERA_X_RESULT = 200
-
         private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA)
-
         private const val REQUEST_CODE_PERMISSIONS = 10
+        const val TAG = "AddStoryFragment"
     }
 
     private lateinit var fragmentManager: FragmentManager
     private var token: String? = ""
 
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View? {
+    ): View {
         _binding = FragmentAddStoryBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -68,7 +69,10 @@ class AddStoryFragment : Fragment() {
         fragmentManager = parentFragmentManager
         mainViewModel.getToken().observe(requireActivity()){
             token = it
-            Log.d(ListStoryFragment.TAG, "Token: $it")
+            Log.d(TAG, "Token: $it")
+        }
+        mainViewModel.isLoading.observe(requireActivity()){
+            showLoading(it)
         }
     }
     private fun setupPermission() {
@@ -98,21 +102,25 @@ class AddStoryFragment : Fragment() {
     }
 
     private fun addStory(){
-        var success = false
         if (getFile != null) {
             val file = reduceFileImage(getFile as File)
             val description = binding.edDescription.text.toString()
             if(token != null){
-                success = mainViewModel.uploadStory(file, description, token!!)
+                val uploadSuccessLiveData = mainViewModel.uploadStory(file, description, token!!)
+                uploadSuccessLiveData.observe(requireActivity()) { uploadSuccess ->
+                    if (uploadSuccess) {
+                        Toast.makeText(requireContext(), "Upload Success", Toast.LENGTH_SHORT).show()
+                        fragmentManager.popBackStack()
+                    } else{
+                        Toast.makeText(requireContext(), "Failed to Upload", Toast.LENGTH_SHORT).show()
+                    }
+                }
             }
             else{
                 Toast.makeText(requireContext(), "Who are you?", Toast.LENGTH_SHORT).show()
             }
         } else {
             Toast.makeText(requireContext(), "Please fill above data", Toast.LENGTH_SHORT).show()
-        }
-        if(success){
-            Toast.makeText(requireContext(), "Story Uploaded", Toast.LENGTH_SHORT).show()
         }
 
     }
@@ -175,5 +183,8 @@ class AddStoryFragment : Fragment() {
         }
     }
 
+    private fun showLoading(isLoading: Boolean) {
+        binding.loadingLayout.visibility = if (isLoading) View.VISIBLE else View.GONE
+    }
 
 }
