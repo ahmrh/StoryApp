@@ -50,6 +50,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
+        android:enabled="false"
         android:id="@+id/btn_submit"
         android:layout_width="match_parent"
         android:layout_height="49dp"

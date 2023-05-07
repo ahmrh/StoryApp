@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.view.WindowManager
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
@@ -19,13 +18,11 @@ import com.ahmrh.storyapp.data.local.AppPreferences
 import com.ahmrh.storyapp.databinding.ActivityMainBinding
 import com.ahmrh.storyapp.ui.auth.AuthViewModel
 import com.ahmrh.storyapp.ui.auth.LoginActivity
-import com.ahmrh.storyapp.ui.story.DetailStoryFragment
 import com.ahmrh.storyapp.ui.story.ListStoryFragment
 import com.ahmrh.storyapp.util.ViewModelFactory
 
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "login")
 class MainActivity : AppCompatActivity() {
-
     companion object{
         const val TAG = "MainActivity"
     }
@@ -82,7 +79,6 @@ class MainActivity : AppCompatActivity() {
                 startActivity(Intent(this, LoginActivity::class.java))
                 finish()
             }
-
         }
 
         return true

@@ -43,6 +43,17 @@ class LoginActivity : AppCompatActivity() {
         loginCheck()
     }
 
+    override fun onBackPressed() {
+        authViewModel.isLogin().observe(this){isLogin ->
+            if(!isLogin) {
+                finishAffinity()
+                return@observe
+            }
+
+            super.onBackPressed()
+        }
+    }
+
     private fun setupUtil() {
         val pref = AppPreferences.getInstance(dataStore)
         authViewModel = ViewModelProvider(this, ViewModelFactory(pref)).get(
@@ -89,15 +100,27 @@ class LoginActivity : AppCompatActivity() {
             showLoading(it)
         }
 
-        binding.edLoginEmail.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
+        binding.edLoginPassword.addTextChangedListener(object :TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                // do nothing
             }
-            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                setButtonEnable()
             }
-            override fun afterTextChanged(s: Editable) {
+
+            override fun afterTextChanged(s: Editable?) {
+                // do nothing
             }
+
         })
+
         supportActionBar?.hide()
+    }
+
+    private fun setButtonEnable() {
+        val password = binding.edLoginPassword.text
+        binding.btnSubmit.isEnabled = (password?.length ?: 0) >= 8
     }
 
     private fun showLoading(isLoading: Boolean) {

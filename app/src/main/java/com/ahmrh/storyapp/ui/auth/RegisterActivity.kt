@@ -5,6 +5,8 @@ import android.content.Intent
 import android.icu.lang.UCharacter.GraphemeClusterBreak.T
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.View
 import android.widget.Toast
 import androidx.datastore.core.DataStore
@@ -62,7 +64,26 @@ class RegisterActivity : AppCompatActivity() {
             showLoading(it)
         }
 
+        binding.edRegisterPassword.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                // do nothing
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                setButtonEnable()
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                // do nothing
+            }
+
+        })
         supportActionBar?.hide()
+    }
+
+    private fun setButtonEnable() {
+        val password = binding.edRegisterPassword.text
+        binding.btnSubmit.isEnabled = (password?.length ?: 0) >= 8
     }
 
     private fun showLoading(isLoading: Boolean) {

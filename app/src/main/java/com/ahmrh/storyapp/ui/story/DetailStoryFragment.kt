@@ -1,16 +1,16 @@
 package com.ahmrh.storyapp.ui.story
 
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
+import android.animation.PropertyValuesHolder
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import com.ahmrh.storyapp.R
 import com.ahmrh.storyapp.data.local.Story
 import com.ahmrh.storyapp.databinding.FragmentDetailStoryBinding
-import com.ahmrh.storyapp.databinding.FragmentListStoryBinding
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 
@@ -34,6 +34,7 @@ class DetailStoryFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         Log.d(TAG, story.toString())
 
+        playAnimation()
         setupData()
     }
 
@@ -47,6 +48,22 @@ class DetailStoryFragment : Fragment() {
             .load(story?.photoUrl ?: placeholderUrl)
             .transition(DrawableTransitionOptions.withCrossFade())
             .into(binding.imgDetailPhoto)
+    }
+
+    private fun playAnimation() {
+        ObjectAnimator.ofFloat(binding.imgDetailPhoto, View.TRANSLATION_X, -30f, 30f).apply {
+            duration = 6000
+            repeatCount = ObjectAnimator.INFINITE
+            repeatMode = ObjectAnimator.REVERSE
+        }.start()
+
+        val name = ObjectAnimator.ofFloat(binding.tvDetailName, View.ALPHA, 1f).setDuration(500)
+        val desc = ObjectAnimator.ofFloat(binding.tvDetailDesc, View.ALPHA, 1f).setDuration(500)
+
+        AnimatorSet().apply {
+            playSequentially(name, desc)
+            startDelay = 500
+        }.start()
     }
 
 }
