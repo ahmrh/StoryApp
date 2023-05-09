@@ -73,6 +73,11 @@ class LoginActivity : AppCompatActivity() {
 
     private fun setupAction() {
         binding.btnSubmit.setOnClickListener {
+            if(binding.edLoginEmail.error != null || binding.edLoginPassword.error != null){
+                Toast.makeText(this, "Please recheck above input error", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
             val email = binding.edLoginEmail.text.toString()
             val password = binding.edLoginPassword.text.toString()
 
@@ -100,28 +105,9 @@ class LoginActivity : AppCompatActivity() {
             showLoading(it)
         }
 
-        binding.edLoginPassword.addTextChangedListener(object :TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-                // do nothing
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                setButtonEnable()
-            }
-
-            override fun afterTextChanged(s: Editable?) {
-                // do nothing
-            }
-
-        })
-
         supportActionBar?.hide()
     }
 
-    private fun setButtonEnable() {
-        val password = binding.edLoginPassword.text
-        binding.btnSubmit.isEnabled = (password?.length ?: 0) >= 8
-    }
 
     private fun showLoading(isLoading: Boolean) {
         binding.loadingLayout.visibility = if (isLoading) View.VISIBLE else View.GONE

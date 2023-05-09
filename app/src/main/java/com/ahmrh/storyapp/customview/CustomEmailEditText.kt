@@ -14,7 +14,6 @@ import com.ahmrh.storyapp.R
 class CustomEmailEditText: AppCompatEditText{
     private val emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+"
 
-
     constructor(context: Context) : super(context) {
         init()
     }
@@ -28,15 +27,15 @@ class CustomEmailEditText: AppCompatEditText{
     private fun init() {
         addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
-                // Do nothing.
+                if (s.toString().isEmpty()) showEmptyError()
             }
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-                // Do nothing.
+                if (! s.toString().trim().matches(emailPattern.toRegex())) showEmailError()
+                if (s.toString().isEmpty()) showEmptyError()
             }
             override fun afterTextChanged(s: Editable) {
                 if (! s.toString().trim().matches(emailPattern.toRegex())) showEmailError()
                 if (s.toString().isEmpty()) showEmptyError()
-                // Do nothing.
             }
         })
     }
@@ -50,10 +49,6 @@ class CustomEmailEditText: AppCompatEditText{
         requestFocus()
     }
 
-    override fun setError(error: CharSequence?, icon: Drawable?) {
-        setCompoundDrawables(null, null, icon, null)
-        super.setError(error, icon)
-    }
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
