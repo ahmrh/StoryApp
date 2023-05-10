@@ -1,5 +1,6 @@
 package com.ahmrh.storyapp.data.repositories
 
+import android.location.Location
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.paging.*
@@ -10,7 +11,6 @@ import com.ahmrh.storyapp.data.remote.responses.DefaultResponse
 import com.ahmrh.storyapp.data.remote.responses.StoryItem
 import com.ahmrh.storyapp.data.remote.retrofit.ApiService
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import okhttp3.MediaType.Companion.toMediaType
@@ -44,7 +44,7 @@ class StoryRepository(private val apiService: ApiService, private val storyDatab
         return flowOf(listStory)
     }
 
-     fun uploadStory(file: File, description: String): LiveData<Boolean>{
+     fun uploadStory(file: File, description: String, location: Location?): LiveData<Boolean>{
 
         val uploadSuccessLiveData = MutableLiveData<Boolean>()
 
@@ -56,9 +56,9 @@ class StoryRepository(private val apiService: ApiService, private val storyDatab
             requestImageFile
         )
 
-        val uploadImageRequest = apiService.addStory(imageMultipart, requestDescription)
+        val client = apiService.addStory(imageMultipart, requestDescription, location?.latitude, location?.longitude)
 
-        uploadImageRequest.enqueue(object : Callback<DefaultResponse> {
+        client.enqueue(object : Callback<DefaultResponse> {
             override fun onResponse(
                 call: Call<DefaultResponse>,
                 response: Response<DefaultResponse>

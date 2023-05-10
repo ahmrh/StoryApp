@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.Intent.ACTION_GET_CONTENT
 import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
+import android.location.Location
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -24,6 +25,8 @@ import com.ahmrh.storyapp.ui.main.MainViewModel
 import com.ahmrh.storyapp.ui.story.reduceFileImage
 import com.ahmrh.storyapp.ui.story.rotateFile
 import com.ahmrh.storyapp.ui.story.uriToFile
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import java.io.File
 
 class AddStoryFragment : Fragment() {
@@ -36,6 +39,7 @@ class AddStoryFragment : Fragment() {
     private val mainViewModel: MainViewModel by lazy {
         (activity as MainActivity).mainViewModel
     }
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
 
     companion object {
         const val CAMERA_X_RESULT = 200
@@ -70,6 +74,7 @@ class AddStoryFragment : Fragment() {
         mainViewModel.isLoading.observe(requireActivity()){
             showLoading(it)
         }
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
     }
     private fun setupPermission() {
         if (!allPermissionsGranted()) {
@@ -95,14 +100,69 @@ class AddStoryFragment : Fragment() {
         binding.btnUpload.setOnClickListener{
             addStory()
         }
+        if(binding.switchLocation.isChecked){
+            getMyLastLocation()
+
+        }
     }
+    private val requestPermissionLauncher =
+        registerForActivityResult(
+            ActivityResultContracts.RequestMultiplePermissions()
+        ) { permissions ->
+            when {
+                permissions[Manifest.permission.ACCESS_FINE_LOCATION] ?: false -> {
+                    // Precise location access granted.
+                    getMyLastLocation()
+                }
+                permissions[Manifest.permission.ACCESS_COARSE_LOCATION] ?: false -> {
+                    // Only approximate location access granted.
+                    getMyLastLocation()
+                }
+                else -> {
+                    // No location access granted.
+                }
+            }
+        }
+    private fun checkPermission(permission: String): Boolean {
+        return ContextCompat.checkSelfPermission(
+            requireContext(),
+            permission
+        ) == PackageManager.PERMISSION_GRANTED
+    }
+    private fun getMyLastLocation() {
+        if (checkPermission(Manifest.permission.ACCESS_FINE_LOCATION) &&
+            checkPermission(Manifest.permission.ACCESS_COARSE_LOCATION)
+        ){
+            fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
+                if (location != null) {
+                    lastLocation = location
+                } else {
+                    Toast.makeText(
+                        requireContext(),
+                        "Location is not found. Try Again",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+        } else {
+            requestPermissionLauncher.launch(
+                arrayOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                )
+            )
+        }
+    }
+
+    private var lastLocation: Location? = null
 
     private fun addStory(){
         if (getFile != null) {
             val file = reduceFileImage(getFile as File)
             val description = binding.edDescription.text.toString()
+            val location = lastLocation
             if(token != null){
-                val uploadSuccessLiveData = mainViewModel.uploadStory(file, description)
+                val uploadSuccessLiveData = mainViewModel.uploadStory(file, description, location)
                 uploadSuccessLiveData.observe(requireActivity()) { uploadSuccess ->
                     if (uploadSuccess) {
                         Toast.makeText(requireContext(), "Upload Success", Toast.LENGTH_SHORT).show()

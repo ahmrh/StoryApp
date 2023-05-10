@@ -1,10 +1,12 @@
 package com.ahmrh.storyapp.ui.main
 
+import android.location.Location
 import androidx.lifecycle.*
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.ahmrh.storyapp.data.local.database.Story
 import com.ahmrh.storyapp.data.repositories.StoryRepository
+import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
@@ -43,9 +45,10 @@ class MainViewModel(private val storyRepository: StoryRepository) : ViewModel() 
         }
     }
 
-     fun uploadStory(file: File, description: String): LiveData<Boolean> {
+
+     fun uploadStory(file: File, description: String, location: Location?): LiveData<Boolean> {
         _isLoading.value = true
-        val response = storyRepository.uploadStory(file, description)
+        val response = storyRepository.uploadStory(file, description, location)
         response.observeForever(object: Observer<Boolean>{
             override fun onChanged(value: Boolean) {
                 value.let {
