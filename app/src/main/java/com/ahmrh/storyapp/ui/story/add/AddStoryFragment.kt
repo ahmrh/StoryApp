@@ -100,8 +100,11 @@ class AddStoryFragment : Fragment() {
         binding.btnUpload.setOnClickListener{
             addStory()
         }
-        if(binding.switchLocation.isChecked){
-            getMyLastLocation()
+        binding.switchLocation.setOnCheckedChangeListener{ _, isChecked ->
+            if(isChecked) {
+                getMyLastLocation()
+                Log.d(TAG, lastLocation.toString())
+            }
 
         }
     }

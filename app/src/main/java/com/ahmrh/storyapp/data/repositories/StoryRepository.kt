@@ -56,7 +56,9 @@ class StoryRepository(private val apiService: ApiService, private val storyDatab
             requestImageFile
         )
 
-        val client = apiService.addStory(imageMultipart, requestDescription, location?.latitude, location?.longitude)
+         val latitiude = location?.latitude
+         val longitude = location?.longitude
+        val client = apiService.addStory(imageMultipart, requestDescription, latitiude,longitude )
 
         client.enqueue(object : Callback<DefaultResponse> {
             override fun onResponse(

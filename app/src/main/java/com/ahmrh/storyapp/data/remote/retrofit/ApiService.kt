@@ -31,7 +31,7 @@ interface  ApiService {
     fun addStory(
         @Part file: MultipartBody.Part,
         @Part("description") description: RequestBody,
-        @Part("lan") lan: Double? = null,
+        @Part("lat") lat: Double? = null,
         @Part("lon") lon: Double? = null,
     ): Call<DefaultResponse>
 
