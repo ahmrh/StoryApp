@@ -33,7 +33,7 @@ class StoryRepository(private val apiService: ApiService, private val storyDatab
         ).flow
     }
 
-    fun uploadStory(file: File, description: String): LiveData<Boolean>{
+     fun uploadStory(file: File, description: String): LiveData<Boolean>{
 
         val uploadSuccessLiveData = MutableLiveData<Boolean>()
 
@@ -59,8 +59,11 @@ class StoryRepository(private val apiService: ApiService, private val storyDatab
                 uploadSuccessLiveData.value = false
             }
         })
+
+
         return uploadSuccessLiveData
     }
+
 
     companion object{
         const val TAG = "StoryRepository"

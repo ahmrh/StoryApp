@@ -9,15 +9,8 @@ import androidx.room.withTransaction
 import com.ahmrh.storyapp.data.local.database.RemoteKeys
 import com.ahmrh.storyapp.data.local.database.Story
 import com.ahmrh.storyapp.data.local.database.StoryDatabase
-import com.ahmrh.storyapp.data.remote.responses.ListStoryResponse
 import com.ahmrh.storyapp.data.remote.responses.StoryItem
-import com.ahmrh.storyapp.data.remote.retrofit.ApiConfig
 import com.ahmrh.storyapp.data.remote.retrofit.ApiService
-import kotlinx.coroutines.suspendCancellableCoroutine
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import kotlin.coroutines.resumeWithException
 
 @OptIn(ExperimentalPagingApi::class)
 class StoryRemoteMediator(
@@ -32,21 +25,23 @@ class StoryRemoteMediator(
 
     override suspend fun load(
         loadType: LoadType,
-        state: PagingState<Int, Story>,
+        state: PagingState<Int, Story>
     ): MediatorResult {
-        Log.e(TAG, loadType.toString())
 
+        Log.d(TAG, loadType.toString())
         val page = when (loadType) {
             LoadType.REFRESH -> {
                 val remoteKeys = getRemoteKeyClosestToCurrentPosition(state)
                 remoteKeys?.nextKey?.minus(1) ?: INITIAL_PAGE_INDEX
             }
+
             LoadType.PREPEND -> {
                 val remoteKeys = getRemoteKeyForFirstItem(state)
                 val prevKey = remoteKeys?.prevKey
                     ?: return MediatorResult.Success(endOfPaginationReached = remoteKeys != null)
                 prevKey
             }
+
             LoadType.APPEND -> {
                 val remoteKeys = getRemoteKeyForLastItem(state)
                 val nextKey = remoteKeys?.nextKey
@@ -56,28 +51,23 @@ class StoryRemoteMediator(
         }
 
         return try {
-            val response = apiService.getAllStories(page, state.config.pageSize)
-            val responseData = buildListStory(response.listStory)
 
-
-            val endOfPaginationReached = responseData.isEmpty()
-
+            val responseData = apiService.getAllStories(page, state.config.pageSize)
+            val endOfPaginationReached = responseData.listStory.isEmpty()
             database.withTransaction {
                 if (loadType == LoadType.REFRESH) {
-                    database.remoteKeysDao().deleteRemoteKeys()
                     database.storyDao().deleteAllStories()
+                    database.remoteKeysDao().deleteRemoteKeys()
                 }
                 val prevKey = if (page == 1) null else page - 1
                 val nextKey = if (endOfPaginationReached) null else page + 1
-                val keys = responseData.map {
+                val keys = responseData.listStory.map {
                     RemoteKeys(id = it.id, prevKey = prevKey, nextKey = nextKey)
                 }
                 database.remoteKeysDao().insertAll(keys)
-                database.storyDao().insertStories(responseData)
+                database.storyDao().insertStories(buildListStory(responseData.listStory))
             }
-
             MediatorResult.Success(endOfPaginationReached = endOfPaginationReached)
-
         } catch (exception: Exception) {
             MediatorResult.Error(exception)
         }

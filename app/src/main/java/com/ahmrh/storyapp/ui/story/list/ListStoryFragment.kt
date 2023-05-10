@@ -9,7 +9,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.commit
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.paging.PagingData
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ahmrh.storyapp.R
@@ -56,6 +58,11 @@ class ListStoryFragment : Fragment() {
         setupAction()
     }
 
+    override fun onResume() {
+        super.onResume()
+        mainViewModel.fetchStories()
+    }
+
     private fun setupAction() {
         binding.btnAddStory.setOnClickListener{
             mAddStoryFragment = AddStoryFragment()
@@ -73,15 +80,13 @@ class ListStoryFragment : Fragment() {
 
 
     private fun setupData() {
-        mainViewModel.pagingStory.observe(requireActivity()){
-            setStoriesData(it)
-        }
+        setStoriesData()
         mainViewModel.isLoading.observe(requireActivity()){
             showLoading(it)
         }
     }
 
-    private fun setStoriesData(pagingStory : PagingData<Story>){
+    private fun setStoriesData(){
         binding.rvStories.layoutManager = LinearLayoutManager(requireActivity())
         listStoryAdapter = ListStoryAdapter()
 
@@ -91,16 +96,17 @@ class ListStoryFragment : Fragment() {
             }
         )
         lifecycleScope.launch {
-            listStoryAdapter.submitData(pagingStory)
+            repeatOnLifecycle(Lifecycle.State.STARTED){
+                mainViewModel.pagingStory.collect{
+                    listStoryAdapter.submitData(lifecycle, it.pagingStory)
+                }
+            }
         }
-
         listStoryAdapter.setOnItemClickCallback(object: ListStoryAdapter.OnItemClickCallback {
             override fun onItemClicked(data: Story){
                 showSelectedStory(data)
             }
         })
-
-
     }
 
     private fun showLoading(isLoading: Boolean) {

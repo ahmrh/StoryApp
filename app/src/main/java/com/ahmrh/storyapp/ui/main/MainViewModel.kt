@@ -5,6 +5,11 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.ahmrh.storyapp.data.local.database.Story
 import com.ahmrh.storyapp.data.repositories.StoryRepository
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import java.io.File
 
 class MainViewModel(private val storyRepository: StoryRepository) : ViewModel() {
@@ -15,25 +20,20 @@ class MainViewModel(private val storyRepository: StoryRepository) : ViewModel() 
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
 
-    private val _pagingStory = getPagingStoryLiveData()
-    val pagingStory: LiveData<PagingData<Story>> = _pagingStory
+    private val _pagingStory = MutableStateFlow(StoryState())
+    val pagingStory = _pagingStory.asStateFlow()
 
-    private fun getPagingStoryLiveData(): LiveData<PagingData<Story>> {
-        _isLoading.value = true
-        val pagingStory = storyRepository.getStory().cachedIn(viewModelScope).asLiveData()
-        pagingStory.observeForever(object : Observer<PagingData<Story>> {
-            override fun onChanged(value: PagingData<Story>) {
-                value.let {
-                    _isLoading.value = false
-                    pagingStory.removeObserver(this)
+    fun fetchStories(){
+        viewModelScope.launch {
+            storyRepository.getStory().cachedIn(viewModelScope).collect{stories ->
+                _pagingStory.update{
+                    it.copy(pagingStory = stories)
                 }
             }
-        })
-
-        return pagingStory
+        }
     }
 
-    fun uploadStory(file: File, description: String): LiveData<Boolean> {
+     fun uploadStory(file: File, description: String): LiveData<Boolean> {
         _isLoading.value = true
         val response = storyRepository.uploadStory(file, description)
         response.observeForever(object: Observer<Boolean>{
@@ -47,5 +47,9 @@ class MainViewModel(private val storyRepository: StoryRepository) : ViewModel() 
 
         return response
     }
+
+    data class StoryState(
+        val pagingStory: PagingData<Story> = PagingData.empty()
+    )
 
 }
