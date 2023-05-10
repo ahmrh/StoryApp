@@ -23,11 +23,21 @@ class MainViewModel(private val storyRepository: StoryRepository) : ViewModel() 
     private val _pagingStory = MutableStateFlow(StoryState())
     val pagingStory = _pagingStory.asStateFlow()
 
+    private val _mapStateFlow = MutableStateFlow(MapState())
+    val mapStateFlow = _mapStateFlow.asStateFlow()
+
     fun fetchStories(){
         viewModelScope.launch {
             storyRepository.getStory().cachedIn(viewModelScope).collect{stories ->
                 _pagingStory.update{
                     it.copy(pagingStory = stories)
+                }
+            }
+        }
+        viewModelScope.launch {
+            storyRepository.getAllStoriesWithLocation().collect{stories ->
+                _mapStateFlow.update {
+                    it.copy(listStory = stories)
                 }
             }
         }
@@ -50,6 +60,10 @@ class MainViewModel(private val storyRepository: StoryRepository) : ViewModel() 
 
     data class StoryState(
         val pagingStory: PagingData<Story> = PagingData.empty()
+    )
+
+    data class MapState(
+        val listStory: List<Story> = emptyList()
     )
 
 }

@@ -26,6 +26,14 @@
         android:theme="@style/Theme.StoryApp"
         tools:targetApi="31">
 
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyDbd6IFrd06BNUVSwRlbSQLBf6hTEK72o8" />
+
+        <activity
+            android:name=".ui.map.MapsActivity"
+            android:exported="false"
+            android:label="@string/title_activity_map" />
         <activity
             android:name=".ui.story.add.CameraActivity"
             android:exported="false" />

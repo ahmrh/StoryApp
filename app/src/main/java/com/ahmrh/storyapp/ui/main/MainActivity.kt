@@ -18,6 +18,7 @@ import com.ahmrh.storyapp.R
 import com.ahmrh.storyapp.databinding.ActivityMainBinding
 import com.ahmrh.storyapp.ui.auth.AuthViewModel
 import com.ahmrh.storyapp.ui.auth.LoginActivity
+import com.ahmrh.storyapp.ui.map.MapsActivity
 import com.ahmrh.storyapp.ui.story.list.ListStoryFragment
 import com.ahmrh.storyapp.util.ViewModelFactory
 import kotlinx.coroutines.launch
@@ -80,6 +81,9 @@ class MainActivity : AppCompatActivity() {
                 }
                 startActivity(Intent(this, LoginActivity::class.java))
                 finish()
+            }
+            R.id.menu_map -> {
+                startActivity(Intent(this, MapsActivity::class.java))
             }
         }
 

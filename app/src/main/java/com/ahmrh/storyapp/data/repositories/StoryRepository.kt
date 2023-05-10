@@ -7,8 +7,12 @@ import com.ahmrh.storyapp.data.local.database.Story
 import com.ahmrh.storyapp.data.local.database.StoryDatabase
 import com.ahmrh.storyapp.data.remote.StoryRemoteMediator
 import com.ahmrh.storyapp.data.remote.responses.DefaultResponse
+import com.ahmrh.storyapp.data.remote.responses.StoryItem
 import com.ahmrh.storyapp.data.remote.retrofit.ApiService
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
@@ -31,6 +35,13 @@ class StoryRepository(private val apiService: ApiService, private val storyDatab
                 storyDatabase.storyDao().getAllStories()
             }
         ).flow
+    }
+
+    suspend fun getAllStoriesWithLocation() : Flow<List<Story>> {
+        val response = apiService.getAllStoriesWithLocation(1)
+        val listStory: List<Story> = buildListStory(response.listStory)
+
+        return flowOf(listStory)
     }
 
      fun uploadStory(file: File, description: String): LiveData<Boolean>{
@@ -65,6 +76,21 @@ class StoryRepository(private val apiService: ApiService, private val storyDatab
     }
 
 
+    private fun buildListStory(listStoryItem: List<StoryItem>): List<Story> {
+        val listStory: List<Story> = listStoryItem.map { storyItem ->
+            Story(
+                storyItem.id,
+                storyItem.name,
+                storyItem.description,
+                storyItem.photoUrl,
+                storyItem.createdAt,
+                (storyItem.lat ?: 0.0) as Double,
+                (storyItem.lon ?: 0.0) as Double
+            )
+        }
+
+        return listStory
+    }
     companion object{
         const val TAG = "StoryRepository"
     }

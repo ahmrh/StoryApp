@@ -14,4 +14,6 @@
     <string name="get_started">Get Started</string>
     <string name="welcome">Welcome</string>
     <string name="retry">Retry</string>
+    <string name="title_activity_map">MapActivity</string>
+    <string name="title_activity_maps">MapsActivity</string>
 </resources>
