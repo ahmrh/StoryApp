@@ -1,25 +1,26 @@
-package com.ahmrh.storyapp.ui.story
+package com.ahmrh.storyapp.ui.story.list
 
-import android.app.Activity
 import android.os.Bundle
+import android.text.TextUtils.replace
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import androidx.core.app.ActivityOptionsCompat
-import androidx.core.os.bundleOf
 import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.commit
 import androidx.lifecycle.lifecycleScope
+import androidx.paging.PagingData
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ahmrh.storyapp.R
-import com.ahmrh.storyapp.data.local.Story
+import com.ahmrh.storyapp.data.local.database.Story
 import com.ahmrh.storyapp.databinding.FragmentListStoryBinding
 import com.ahmrh.storyapp.ui.main.MainActivity
 import com.ahmrh.storyapp.ui.main.MainViewModel
+import com.ahmrh.storyapp.ui.story.add.AddStoryFragment
+import com.ahmrh.storyapp.ui.story.detail.DetailStoryFragment
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.launch
 
 class ListStoryFragment : Fragment() {
@@ -72,28 +73,34 @@ class ListStoryFragment : Fragment() {
 
 
     private fun setupData() {
-        mainViewModel.getToken().observe(requireActivity()){
-            mainViewModel.fetchStories(it)
-            Log.d(TAG, "Token: $it")
-        }
-        mainViewModel.listStory.observe(requireActivity()){ listStory ->
-            setStoriesData(listStory)
+        mainViewModel.pagingStory.observe(requireActivity()){
+            setStoriesData(it)
         }
         mainViewModel.isLoading.observe(requireActivity()){
             showLoading(it)
         }
     }
 
-    private fun setStoriesData(listStory: List<Story>){
+    private fun setStoriesData(pagingStory : PagingData<Story>){
         binding.rvStories.layoutManager = LinearLayoutManager(requireActivity())
-        listStoryAdapter = ListStoryAdapter(listStory)
-        binding.rvStories.adapter = listStoryAdapter
+        listStoryAdapter = ListStoryAdapter()
 
-        listStoryAdapter.setOnItemClickCallback(object: ListStoryAdapter.OnItemClickCallback{
+        binding.rvStories.adapter = listStoryAdapter.withLoadStateFooter(
+            footer = LoadingStateAdapter {
+                listStoryAdapter.retry()
+            }
+        )
+        lifecycleScope.launch {
+            listStoryAdapter.submitData(pagingStory)
+        }
+
+        listStoryAdapter.setOnItemClickCallback(object: ListStoryAdapter.OnItemClickCallback {
             override fun onItemClicked(data: Story){
                 showSelectedStory(data)
             }
         })
+
+
     }
 
     private fun showLoading(isLoading: Boolean) {

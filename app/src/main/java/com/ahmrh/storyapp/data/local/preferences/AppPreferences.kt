@@ -1,12 +1,14 @@
-package com.ahmrh.storyapp.data.local
+package com.ahmrh.storyapp.data.local.preferences
 
 import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.*
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.runBlocking
 
-class AppPreferences private constructor(private val dataStore: DataStore<Preferences>) {
+class AppPreferences(private val dataStore: DataStore<Preferences>) {
     companion object {
         const val TAG = "AppPreferences"
         @Volatile
@@ -48,15 +50,11 @@ class AppPreferences private constructor(private val dataStore: DataStore<Prefer
         }
     }
 
-    fun getToken(): Flow<String>{
-        return dataStore.data.map { preferences->
-            preferences[TOKEN_KEY] ?: "No Token"
-        }
+    fun getToken() = runBlocking {
+        dataStore.data.first()[TOKEN_KEY]
     }
 
-    fun getName() : Flow<String>{
-        return dataStore.data.map { preferences ->
-            preferences[NAME_KEY] ?: ""
-        }
+    fun getName() = runBlocking {
+        dataStore.data.first()[NAME_KEY]
     }
 }

@@ -8,8 +8,9 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Call
 import retrofit2.http.*
+import java.util.*
 
-interface ApiService {
+interface  ApiService {
     @FormUrlEncoded
     @POST("register")
     fun register(
@@ -30,18 +31,18 @@ interface ApiService {
     fun addStory(
         @Part file: MultipartBody.Part,
         @Part("description") description: RequestBody,
-        @Header("Authorization") token: String
     ): Call<DefaultResponse>
 
     @GET("stories")
-    fun getAllStories(
-        @Header("Authorization") token: String
-    ): Call<ListStoryResponse>
+    suspend fun getAllStories(
+        @Query("page") page: Int? = null,
+        @Query("size") size: Int? = null,
+    ): ListStoryResponse
+
 
     @GET("stories/{id}")
     fun getDetailStory(
         @Part("id") id : Int,
-        @Header("Authorization") token: String
     ): Call<DetailStoryResponse>
 
 }

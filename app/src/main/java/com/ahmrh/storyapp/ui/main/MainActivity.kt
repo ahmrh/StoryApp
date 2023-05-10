@@ -13,13 +13,14 @@ import androidx.datastore.preferences.preferencesDataStore
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.commit
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.ahmrh.storyapp.R
-import com.ahmrh.storyapp.data.local.AppPreferences
 import com.ahmrh.storyapp.databinding.ActivityMainBinding
 import com.ahmrh.storyapp.ui.auth.AuthViewModel
 import com.ahmrh.storyapp.ui.auth.LoginActivity
-import com.ahmrh.storyapp.ui.story.ListStoryFragment
+import com.ahmrh.storyapp.ui.story.list.ListStoryFragment
 import com.ahmrh.storyapp.util.ViewModelFactory
+import kotlinx.coroutines.launch
 
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "login")
 class MainActivity : AppCompatActivity() {
@@ -44,11 +45,10 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupUtil() {
 
-        val pref = AppPreferences.getInstance(dataStore)
-        authViewModel = ViewModelProvider(this, ViewModelFactory(pref)).get(
+        authViewModel = ViewModelProvider(this, ViewModelFactory(this)).get(
             AuthViewModel::class.java
         )
-        mainViewModel = ViewModelProvider(this, ViewModelFactory(pref)).get(
+        mainViewModel = ViewModelProvider(this, ViewModelFactory(this)).get(
             MainViewModel::class.java
         )
 
@@ -75,7 +75,9 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
             R.id.menu_logout -> {
-                authViewModel.endSession()
+                lifecycleScope.launch {
+                    authViewModel.endSession()
+                }
                 startActivity(Intent(this, LoginActivity::class.java))
                 finish()
             }

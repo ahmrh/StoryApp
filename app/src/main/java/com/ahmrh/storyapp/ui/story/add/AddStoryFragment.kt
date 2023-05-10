@@ -1,4 +1,4 @@
-package com.ahmrh.storyapp.ui.story
+package com.ahmrh.storyapp.ui.story.add
 
 import android.Manifest
 import android.app.Activity.RESULT_OK
@@ -9,21 +9,21 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.system.Os.remove
 import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.commit
 import com.ahmrh.storyapp.databinding.FragmentAddStoryBinding
 import com.ahmrh.storyapp.ui.main.MainActivity
 import com.ahmrh.storyapp.ui.main.MainViewModel
-import com.ahmrh.storyapp.ui.story.AddStoryFragment.Companion.CAMERA_X_RESULT
+import com.ahmrh.storyapp.ui.story.reduceFileImage
+import com.ahmrh.storyapp.ui.story.rotateFile
+import com.ahmrh.storyapp.ui.story.uriToFile
 import java.io.File
 
 class AddStoryFragment : Fragment() {
@@ -67,10 +67,6 @@ class AddStoryFragment : Fragment() {
 
     private fun setupUtil(){
         fragmentManager = parentFragmentManager
-        mainViewModel.getToken().observe(requireActivity()){
-            token = it
-            Log.d(TAG, "Token: $it")
-        }
         mainViewModel.isLoading.observe(requireActivity()){
             showLoading(it)
         }
@@ -106,7 +102,7 @@ class AddStoryFragment : Fragment() {
             val file = reduceFileImage(getFile as File)
             val description = binding.edDescription.text.toString()
             if(token != null){
-                val uploadSuccessLiveData = mainViewModel.uploadStory(file, description, token!!)
+                val uploadSuccessLiveData = mainViewModel.uploadStory(file, description)
                 uploadSuccessLiveData.observe(requireActivity()) { uploadSuccess ->
                     if (uploadSuccess) {
                         Toast.makeText(requireContext(), "Upload Success", Toast.LENGTH_SHORT).show()

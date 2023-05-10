@@ -1,24 +1,13 @@
 package com.ahmrh.storyapp.ui.auth
 
-import android.content.Context
-import android.content.Intent
-import android.icu.lang.UCharacter.GraphemeClusterBreak.T
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.View
 import android.widget.Toast
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.ViewModelProvider
-import com.ahmrh.storyapp.R
-import com.ahmrh.storyapp.data.local.AppPreferences
 import com.ahmrh.storyapp.databinding.ActivityRegisterBinding
 import com.ahmrh.storyapp.util.ViewModelFactory
 
-private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "login")
 class RegisterActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityRegisterBinding
@@ -34,8 +23,7 @@ class RegisterActivity : AppCompatActivity() {
     }
 
     private fun setupUtil() {
-        val pref = AppPreferences.getInstance(dataStore)
-        authViewModel = ViewModelProvider(this, ViewModelFactory(pref)).get(
+        authViewModel = ViewModelProvider(this, ViewModelFactory(this)).get(
             AuthViewModel::class.java
         )
     }

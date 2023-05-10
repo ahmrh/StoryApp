@@ -1,14 +1,8 @@
-package com.ahmrh.storyapp.ui.story
+package com.ahmrh.storyapp.ui.story.add
 
-import android.app.Application
-import android.content.Context
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.Matrix
 import android.os.Build
 import android.os.Bundle
-import android.os.Environment
 import android.view.WindowInsets
 import android.view.WindowManager
 import android.widget.Toast
@@ -19,11 +13,8 @@ import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
-import com.ahmrh.storyapp.R
 import com.ahmrh.storyapp.databinding.ActivityCameraBinding
-import java.io.File
-import java.io.FileOutputStream
-import java.text.SimpleDateFormat
+import com.ahmrh.storyapp.ui.story.createFile
 import java.util.*
 
 class CameraActivity : AppCompatActivity() {

@@ -1,4 +1,4 @@
-package com.ahmrh.storyapp.data.local
+package com.ahmrh.storyapp.data.local.preferences
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize

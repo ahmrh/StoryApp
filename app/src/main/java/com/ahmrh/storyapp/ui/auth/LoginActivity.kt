@@ -1,26 +1,16 @@
 package com.ahmrh.storyapp.ui.auth
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityOptionsCompat
-import androidx.core.content.ContentProviderCompat.requireContext
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.ViewModelProvider
-import com.ahmrh.storyapp.data.local.AppPreferences
 import com.ahmrh.storyapp.databinding.ActivityLoginBinding
 import com.ahmrh.storyapp.ui.main.MainActivity
 import com.ahmrh.storyapp.util.ViewModelFactory
-
-private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "login")
 
 class LoginActivity : AppCompatActivity() {
     companion object{
@@ -44,7 +34,7 @@ class LoginActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        authViewModel.isLogin().observe(this){isLogin ->
+        authViewModel.isLogin.observe(this){isLogin ->
             if(!isLogin) {
                 finishAffinity()
                 return@observe
@@ -55,14 +45,13 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun setupUtil() {
-        val pref = AppPreferences.getInstance(dataStore)
-        authViewModel = ViewModelProvider(this, ViewModelFactory(pref)).get(
+        authViewModel = ViewModelProvider(this, ViewModelFactory(this)).get(
             AuthViewModel::class.java
         )
     }
 
     private fun loginCheck() {
-        authViewModel.isLogin().observe(this) { isLogin ->
+        authViewModel.isLogin.observe(this) { isLogin ->
             Log.d(TAG, "$isLogin")
             if (isLogin) {
                 startActivity(Intent(this, MainActivity::class.java))

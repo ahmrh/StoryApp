@@ -1,17 +1,17 @@
-package com.ahmrh.storyapp.ui.story
+package com.ahmrh.storyapp.ui.story.list
 
-import android.app.Activity
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.core.app.ActivityOptionsCompat
+import androidx.paging.PagingDataAdapter
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.ahmrh.storyapp.data.local.Story
+import com.ahmrh.storyapp.data.local.database.Story
 import com.ahmrh.storyapp.databinding.ItemRowStoryBinding
 import com.bumptech.glide.Glide
 import java.text.SimpleDateFormat
 import java.util.*
 
-class ListStoryAdapter(private val listStory: List<Story>): RecyclerView.Adapter<ListStoryAdapter.ListViewHolder>() {
+class ListStoryAdapter: PagingDataAdapter<Story, ListStoryAdapter.ListViewHolder>(DIFF_CALLBACK)  {
     class ListViewHolder(var binding: ItemRowStoryBinding) : RecyclerView.ViewHolder(binding.root)
 
     private lateinit var onItemClickCallback: OnItemClickCallback
@@ -29,19 +29,19 @@ class ListStoryAdapter(private val listStory: List<Story>): RecyclerView.Adapter
         return ListViewHolder(binding)
     }
 
-    override fun getItemCount(): Int = listStory.size
 
     override fun onBindViewHolder(holder: ListViewHolder, position: Int) {
-        holder.binding.tvItemTitle.text = listStory[position].name
-        holder.binding.tvItemDesc.text = listStory[position].description
-        holder.binding.tvItemCreatedAt.text = convertIsoToSimple(listStory[position].createdAt)
+        val story = getItem(position) ?: return
+        holder.binding.tvItemTitle.text = story.name
+        holder.binding.tvItemDesc.text = story.description
+        holder.binding.tvItemCreatedAt.text = convertIsoToSimple(story.createdAt)
 
         Glide.with(holder.itemView.context)
-            .load(listStory[position].photoUrl)
+            .load(story.photoUrl)
             .into(holder.binding.imgItemPhoto)
 
         holder.itemView.setOnClickListener{
-            onItemClickCallback.onItemClicked(listStory[holder.adapterPosition])
+            onItemClickCallback.onItemClicked(story)
         }
 
     }
@@ -55,5 +55,17 @@ class ListStoryAdapter(private val listStory: List<Story>): RecyclerView.Adapter
         val outputFormat = SimpleDateFormat("MMM dd, hh:mm", Locale.getDefault())
 
         return outputFormat.format(date as Date)
+    }
+
+    companion object {
+        private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Story>() {
+            override fun areItemsTheSame(oldItem: Story, newItem: Story): Boolean {
+                return oldItem == newItem
+            }
+
+            override fun areContentsTheSame(oldItem: Story, newItem: Story): Boolean {
+                return oldItem.id == newItem.id
+            }
+        }
     }
 }
