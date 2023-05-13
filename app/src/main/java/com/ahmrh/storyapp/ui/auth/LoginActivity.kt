@@ -97,7 +97,6 @@ class LoginActivity : AppCompatActivity() {
         supportActionBar?.hide()
     }
 
-
     private fun showLoading(isLoading: Boolean) {
         binding.loadingLayout.visibility = if (isLoading) View.VISIBLE else View.GONE
     }
